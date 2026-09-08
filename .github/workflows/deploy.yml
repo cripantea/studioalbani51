@@ -1,0 +1,23 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Deploy via SSH (git pull sul server)
+        # La chiave DEPLOY_SSH_KEY e' vincolata lato server (forced-command in
+        # authorized_keys) a eseguire SOLO "git pull" nella cartella del sito:
+        # qualunque comando scritto qui viene ignorato ed e' quello a girare davvero.
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: srv961648.hstgr.cloud
+          username: cristi
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: cd /var/www/html/studioalbani51 && git pull origin main
